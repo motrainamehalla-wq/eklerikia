@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ßáíÉ ÇáÈÇÈÇ ßíÑáÓ æÇáÈÇÈÇ ÔäæÏÉ ÇáÅßáíÑíßíÉ - ÇáãÍáÉ ÇáßÈÑì</title>
+<title>ÙƒÙ„ÙŠØ© Ø§Ù„Ø¨Ø§Ø¨Ø§ ÙƒÙŠØ±Ù„Ø³ ÙˆØ§Ù„Ø¨Ø§Ø¨Ø§ Ø´Ù†ÙˆØ¯Ø© Ø§Ù„Ø¥ÙƒÙ„ÙŠØ±ÙŠÙƒÙŠØ© - Ø§Ù„Ù…Ø­Ù„Ø© Ø§Ù„ÙƒØ¨Ø±Ù‰</title>
 <link rel="icon" href="/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
@@ -66,9 +66,9 @@ video{width:100%;max-width:340px;border-radius:8px;background:#000}
 </head>
 <body>
 <header class="top">
-  <img class="logo" src="/logo.png" alt="ÔÚÇÑ ÇáßáíÉ">
-  <h1>ßáíÉ ÇáÈÇÈÇ ßíÑáÓ ÚãæÏ ÇáÅíãÇä æÇáÈÇÈÇ ÔäæÏÉ ÇáËÇáË ÇáÅßáíÑíßíÉ</h1>
-  <p>İÑÚ ÇáãÍáÉ ÇáßÈÑì</p>
+  <img class="logo" src="/logo.png" alt="Ø´Ø¹Ø§Ø± Ø§Ù„ÙƒÙ„ÙŠØ©">
+  <h1>ÙƒÙ„ÙŠØ© Ø§Ù„Ø¨Ø§Ø¨Ø§ ÙƒÙŠØ±Ù„Ø³ Ø¹Ù…ÙˆØ¯ Ø§Ù„Ø¥ÙŠÙ…Ø§Ù† ÙˆØ§Ù„Ø¨Ø§Ø¨Ø§ Ø´Ù†ÙˆØ¯Ø© Ø§Ù„Ø«Ø§Ù„Ø« Ø§Ù„Ø¥ÙƒÙ„ÙŠØ±ÙŠÙƒÙŠØ©</h1>
+  <p>ÙØ±Ø¹ Ø§Ù„Ù…Ø­Ù„Ø© Ø§Ù„ÙƒØ¨Ø±Ù‰</p>
 </header>
 <div class="wrap" id="app"></div>
 
@@ -84,7 +84,7 @@ async function api(path, method='GET', body){
   const res = await fetch('/api'+path, {method, headers, body: body?JSON.stringify(body):undefined});
   let data = {};
   try{ data = await res.json(); }catch(e){}
-  if(!res.ok) throw new Error(data.error || 'ÍÏË ÎØÃ¡ ÍÇæá ãÑÉ ÃÎÑì');
+  if(!res.ok) throw new Error(data.error || 'Ø­Ø¯Ø« Ø®Ø·Ø£ØŒ Ø­Ø§ÙˆÙ„ Ù…Ø±Ø© Ø£Ø®Ø±Ù‰');
   return data;
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7) }
@@ -108,8 +108,8 @@ function renderLogin(){
   app.innerHTML = `
   <div class="card" style="max-width:440px;margin:20px auto">
     <div class="tabs">
-      <div class="tab ${authMode==='login'?'active':''}" onclick="authMode='login';render()">ÊÓÌíá ÇáÏÎæá</div>
-      <div class="tab ${authMode==='register'?'active':''}" onclick="authMode='register';render()">ÊÓÌíá ÚÖæ ÌÏíÏ</div>
+      <div class="tab ${authMode==='login'?'active':''}" onclick="authMode='login';render()">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„</div>
+      <div class="tab ${authMode==='register'?'active':''}" onclick="authMode='register';render()">ØªØ³Ø¬ÙŠÙ„ Ø¹Ø¶Ùˆ Ø¬Ø¯ÙŠØ¯</div>
     </div>
     <div id="msgbox"></div>
     ${authMode==='login' ? loginForm() : registerForm()}
@@ -117,18 +117,18 @@ function renderLogin(){
 }
 function loginForm(){
   return `
-  <div class="field"><label>ÇáÑŞã ÇáŞæãì (Ãæ "admin" ááãÏíÑ)</label><input id="li-id" placeholder="ÇáÑŞã ÇáŞæãì"></div>
-  <div class="field"><label>ßáãÉ ÇáãÑæÑ</label><input id="li-pass" type="password" placeholder="ßáãÉ ÇáãÑæÑ"></div>
-  <button class="btn-navy" style="width:100%" onclick="doLogin()">ÏÎæá</button>`;
+  <div class="field"><label>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰ (Ø£Ùˆ "admin" Ù„Ù„Ù…Ø¯ÙŠØ±)</label><input id="li-id" placeholder="Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰"></div>
+  <div class="field"><label>ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</label><input id="li-pass" type="password" placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±"></div>
+  <button class="btn-navy" style="width:100%" onclick="doLogin()">Ø¯Ø®ÙˆÙ„</button>`;
 }
 function registerForm(){
   return `
-  <div class="field"><label>ÇáÇÓã ÈÇáßÇãá</label><input id="r-name"></div>
-  <div class="field"><label>ÇáÑŞã ÇáŞæãì</label><input id="r-nid" maxlength="14"></div>
-  <div class="field"><label>ÇáßäíÓÉ ÇáÊÇÈÚ áåÇ</label><input id="r-church"></div>
-  <div class="field"><label>ßáãÉ ÇáãÑæÑ</label><input id="r-pass" type="password"></div>
-  <button class="btn-gold" style="width:100%" onclick="doRegister()">ÅÑÓÇá ØáÈ ÇáÊÓÌíá</button>
-  <p class="muted center" style="margin-top:10px">ÓíÊã ÊİÚíá ÍÓÇÈß ÈÚÏ ãæÇİŞÉ ÇáÅÏÇÑÉ</p>`;
+  <div class="field"><label>Ø§Ù„Ø§Ø³Ù… Ø¨Ø§Ù„ÙƒØ§Ù…Ù„</label><input id="r-name"></div>
+  <div class="field"><label>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰</label><input id="r-nid" maxlength="14"></div>
+  <div class="field"><label>Ø§Ù„ÙƒÙ†ÙŠØ³Ø© Ø§Ù„ØªØ§Ø¨Ø¹ Ù„Ù‡Ø§</label><input id="r-church"></div>
+  <div class="field"><label>ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</label><input id="r-pass" type="password"></div>
+  <button class="btn-gold" style="width:100%" onclick="doRegister()">Ø¥Ø±Ø³Ø§Ù„ Ø·Ù„Ø¨ Ø§Ù„ØªØ³Ø¬ÙŠÙ„</button>
+  <p class="muted center" style="margin-top:10px">Ø³ÙŠØªÙ… ØªÙØ¹ÙŠÙ„ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ø¹Ø¯ Ù…ÙˆØ§ÙÙ‚Ø© Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©</p>`;
 }
 function msg(text,type){ const b=document.getElementById('msgbox'); if(b) b.innerHTML = `<div class="msg ${type}">${text}</div>`; }
 
@@ -147,11 +147,11 @@ async function doRegister(){
   const nid=document.getElementById('r-nid').value.trim();
   const church=document.getElementById('r-church').value.trim();
   const pass=document.getElementById('r-pass').value;
-  if(!name||!nid||!church||!pass){ msg('ãä İÖáß Ãßãá ÌãíÚ ÇáÈíÇäÇÊ','err'); return; }
+  if(!name||!nid||!church||!pass){ msg('Ù…Ù† ÙØ¶Ù„Ùƒ Ø£ÙƒÙ…Ù„ Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª','err'); return; }
   try{
     await api('/register','POST',{name, nationalId:nid, church, password:pass});
     authMode='login'; render();
-    setTimeout(()=>msg('Êã ÅÑÓÇá ØáÈß ÈäÌÇÍ¡ ÈÇäÊÙÇÑ ãæÇİŞÉ ÇáÅÏÇÑÉ','ok'),0);
+    setTimeout(()=>msg('ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø·Ù„Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­ØŒ Ø¨Ø§Ù†ØªØ¸Ø§Ø± Ù…ÙˆØ§ÙÙ‚Ø© Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©','ok'),0);
   }catch(e){ msg(e.message,'err'); }
 }
 async function logout(){
@@ -167,15 +167,15 @@ async function renderMember(){
   if(!ME){ ME = await api('/me'); }
   app.innerHTML = `
   <div class="row" style="justify-content:space-between;align-items:center">
-    <h2 style="margin:0">ÃåáÇğ¡ ${ME.name}</h2>
-    <button class="btn-outline btn-sm no-print" onclick="logout()">ÎÑæÌ</button>
+    <h2 style="margin:0">Ø£Ù‡Ù„Ø§Ù‹ØŒ ${ME.name}</h2>
+    <button class="btn-outline btn-sm no-print" onclick="logout()">Ø®Ø±ÙˆØ¬</button>
   </div>
   <div class="tabs">
-    <div class="tab ${memberTab==='profile'?'active':''}" onclick="memberTab='profile';renderMember()">ÈíÇäÇÊì</div>
-    <div class="tab ${memberTab==='schedule'?'active':''}" onclick="memberTab='schedule';renderMember()">ÌÏæá ÇáãÍÇÖÑÇÊ</div>
-    <div class="tab ${memberTab==='attend'?'active':''}" onclick="memberTab='attend';renderMember()">ÊÓÌíá ÇáÍÖæÑ</div>
+    <div class="tab ${memberTab==='profile'?'active':''}" onclick="memberTab='profile';renderMember()">Ø¨ÙŠØ§Ù†Ø§ØªÙ‰</div>
+    <div class="tab ${memberTab==='schedule'?'active':''}" onclick="memberTab='schedule';renderMember()">Ø¬Ø¯ÙˆÙ„ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø§Øª</div>
+    <div class="tab ${memberTab==='attend'?'active':''}" onclick="memberTab='attend';renderMember()">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ±</div>
   </div>
-  <div id="mtab"><p class="muted center">ÌÇÑö ÇáÊÍãíá...</p></div>`;
+  <div id="mtab"><p class="muted center">Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p></div>`;
   if(memberTab==='profile') renderMemberProfile();
   if(memberTab==='schedule') await renderScheduleView();
   if(memberTab==='attend') await renderMemberAttend();
@@ -184,14 +184,14 @@ function renderMemberProfile(){
   document.getElementById('mtab').innerHTML=`
   <div class="card">
     <div class="row">
-      <div class="field"><label>ÇáÇÓã</label><input id="p-name" value="${ME.name}"></div>
-      <div class="field"><label>ÇáßäíÓÉ</label><input id="p-church" value="${ME.church}"></div>
+      <div class="field"><label>Ø§Ù„Ø§Ø³Ù…</label><input id="p-name" value="${ME.name}"></div>
+      <div class="field"><label>Ø§Ù„ÙƒÙ†ÙŠØ³Ø©</label><input id="p-church" value="${ME.church}"></div>
     </div>
     <div class="row">
-      <div class="field"><label>ÇáÑŞã ÇáŞæãì</label><input value="${ME.nationalId}" disabled></div>
-      <div class="field"><label>ßáãÉ ãÑæÑ ÌÏíÏÉ (ÇÊÑßåÇ İÇÑÛÉ áÚÏã ÇáÊÛííÑ)</label><input id="p-pass" type="password"></div>
+      <div class="field"><label>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰</label><input value="${ME.nationalId}" disabled></div>
+      <div class="field"><label>ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø¬Ø¯ÙŠØ¯Ø© (Ø§ØªØ±ÙƒÙ‡Ø§ ÙØ§Ø±ØºØ© Ù„Ø¹Ø¯Ù… Ø§Ù„ØªØºÙŠÙŠØ±)</label><input id="p-pass" type="password"></div>
     </div>
-    <button class="btn-navy" onclick="saveProfile()">ÍİÙ ÇáÊÚÏíáÇÊ</button>
+    <button class="btn-navy" onclick="saveProfile()">Ø­ÙØ¸ Ø§Ù„ØªØ¹Ø¯ÙŠÙ„Ø§Øª</button>
     <div id="pmsg"></div>
   </div>`;
 }
@@ -202,44 +202,44 @@ async function saveProfile(){
   try{
     await api('/me','PUT',{name, church, password: password||undefined});
     if(name) ME.name=name; if(church) ME.church=church;
-    document.getElementById('pmsg').innerHTML='<div class="msg ok">Êã ÍİÙ ÇáÈíÇäÇÊ</div>';
+    document.getElementById('pmsg').innerHTML='<div class="msg ok">ØªÙ… Ø­ÙØ¸ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª</div>';
   }catch(e){ document.getElementById('pmsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
 }
 async function renderScheduleView(){
   const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('mtab').innerHTML=`
   <div class="card">
-    <h3 style="margin-top:0">ÌÏæá ãÍÇÖÑÇÊ ÇáßáíÉ</h3>
-    ${lec.length? `<table><tr><th>ÇáãæÖæÚ</th><th>ÇáÊÇÑíÎ</th><th>ÇáæŞÊ</th></tr>
+    <h3 style="margin-top:0">Ø¬Ø¯ÙˆÙ„ Ù…Ø­Ø§Ø¶Ø±Ø§Øª Ø§Ù„ÙƒÙ„ÙŠØ©</h3>
+    ${lec.length? `<table><tr><th>Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„ÙˆÙ‚Øª</th></tr>
       ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td></tr>`).join('')}
-      </table>` : `<p class="muted">áã íÊã ÅÖÇİÉ ÌÏæá ÈÚÏ</p>`}
+      </table>` : `<p class="muted">Ù„Ù… ÙŠØªÙ… Ø¥Ø¶Ø§ÙØ© Ø¬Ø¯ÙˆÙ„ Ø¨Ø¹Ø¯</p>`}
   </div>`;
 }
 async function renderMemberAttend(){
   document.getElementById('mtab').innerHTML=`
   <div class="card center">
-    <h3 style="margin-top:0">ãÓÍ ßæÏ ÇáãÍÇÖÑÉ</h3>
-    <p class="muted">æÌøå ßÇãíÑÇ ÇáãæÈÇíá äÍæ ßæÏ ÇáãÍÇÖÑÉ ÇáÙÇåÑ ãä ÇáãÓÄæá</p>
-    <button class="btn-gold" onclick="startScan()">İÊÍ ÇáßÇãíÑÇ æÇáãÓÍ</button>
+    <h3 style="margin-top:0">Ù…Ø³Ø­ ÙƒÙˆØ¯ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø©</h3>
+    <p class="muted">ÙˆØ¬Ù‘Ù‡ ÙƒØ§Ù…ÙŠØ±Ø§ Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„ Ù†Ø­Ùˆ ÙƒÙˆØ¯ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø© Ø§Ù„Ø¸Ø§Ù‡Ø± Ù…Ù† Ø§Ù„Ù…Ø³Ø¤ÙˆÙ„</p>
+    <button class="btn-gold" onclick="startScan()">ÙØªØ­ Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ ÙˆØ§Ù„Ù…Ø³Ø­</button>
     <video id="scan-video" class="hidden" playsinline></video>
     <canvas id="scan-canvas" class="hidden"></canvas>
     <div id="scan-result"></div>
   </div>
   <div class="card">
-    <h3 style="margin-top:0">ÓÌá ÍÖæÑì</h3>
-    <div id="my-att-table"><p class="muted">ÌÇÑö ÇáÊÍãíá...</p></div>
+    <h3 style="margin-top:0">Ø³Ø¬Ù„ Ø­Ø¶ÙˆØ±Ù‰</h3>
+    <div id="my-att-table"><p class="muted">Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p></div>
   </div>`;
   await refreshMyAttendanceTable();
 }
 async function refreshMyAttendanceTable(){
   const [mine, lectures] = await Promise.all([api('/attendance/mine'), api('/lectures')]);
   const box = document.getElementById('my-att-table');
-  if(!lectures.length){ box.innerHTML='<p class="muted">áÇ ÊæÌÏ ãÍÇÖÑÇÊ ãÓÌáÉ ÈÚÏ</p>'; return; }
+  if(!lectures.length){ box.innerHTML='<p class="muted">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø­Ø§Ø¶Ø±Ø§Øª Ù…Ø³Ø¬Ù„Ø© Ø¨Ø¹Ø¯</p>'; return; }
   const rows = lectures.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(l=>{
     const present = mine.some(a=>a.lectureId===l.id);
-    return `<tr><td>${l.title}</td><td>${l.date}</td><td><span class="badge ${present?'present':'absent'}">${present?'ÍÇÖÑ':'ÛÇÆÈ'}</span></td></tr>`;
+    return `<tr><td>${l.title}</td><td>${l.date}</td><td><span class="badge ${present?'present':'absent'}">${present?'Ø­Ø§Ø¶Ø±':'ØºØ§Ø¦Ø¨'}</span></td></tr>`;
   }).join('');
-  box.innerHTML = `<table><tr><th>ÇáãÍÇÖÑÉ</th><th>ÇáÊÇÑíÎ</th><th>ÇáÍÇáÉ</th></tr>${rows}</table>`;
+  box.innerHTML = `<table><tr><th>Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø©</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„Ø­Ø§Ù„Ø©</th></tr>${rows}</table>`;
 }
 let scanStream=null;
 function startScan(){
@@ -249,7 +249,7 @@ function startScan(){
   navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
     scanStream=stream; video.srcObject=stream; video.play();
     requestAnimationFrame(tick);
-  }).catch(()=>{ document.getElementById('scan-result').innerHTML='<div class="msg err">ÊÚĞÑ İÊÍ ÇáßÇãíÑÇ¡ ÊÃßÏ ãä ÇáÓãÇÍ ÈÇáæÕæá</div>'; });
+  }).catch(()=>{ document.getElementById('scan-result').innerHTML='<div class="msg err">ØªØ¹Ø°Ø± ÙØªØ­ Ø§Ù„ÙƒØ§Ù…ÙŠØ±Ø§ØŒ ØªØ£ÙƒØ¯ Ù…Ù† Ø§Ù„Ø³Ù…Ø§Ø­ Ø¨Ø§Ù„ÙˆØµÙˆÙ„</div>'; });
   function tick(){
     if(!scanStream) return;
     if(video.readyState===video.HAVE_ENOUGH_DATA){
@@ -270,8 +270,8 @@ async function handleScanResult(data){
   try{
     const result = await api('/attendance/scan','POST',{code:data.trim()});
     box.innerHTML = result.already
-      ? `<div class="msg ok">Êã ÊÓÌíá ÍÖæÑß ãÓÈŞÇğ İì: ${result.title}</div>`
-      : `<div class="msg ok">Êã ÊÓÌíá ÍÖæÑß ÈäÌÇÍ İì ãÍÇÖÑÉ: ${result.title}</div>`;
+      ? `<div class="msg ok">ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø­Ø¶ÙˆØ±Ùƒ Ù…Ø³Ø¨Ù‚Ø§Ù‹ ÙÙ‰: ${result.title}</div>`
+      : `<div class="msg ok">ØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø­Ø¶ÙˆØ±Ùƒ Ø¨Ù†Ø¬Ø§Ø­ ÙÙ‰ Ù…Ø­Ø§Ø¶Ø±Ø©: ${result.title}</div>`;
     await refreshMyAttendanceTable();
   }catch(e){ box.innerHTML = `<div class="msg err">${e.message}</div>`; }
 }
@@ -282,17 +282,17 @@ let selectedLectureId=null;
 async function renderAdmin(){
   app.innerHTML=`
   <div class="row" style="justify-content:space-between;align-items:center">
-    <h2 style="margin:0">áæÍÉ ÊÍßã ÇáÅÏÇÑÉ</h2>
-    <button class="btn-outline btn-sm no-print" onclick="logout()">ÎÑæÌ</button>
+    <h2 style="margin:0">Ù„ÙˆØ­Ø© ØªØ­ÙƒÙ… Ø§Ù„Ø¥Ø¯Ø§Ø±Ø©</h2>
+    <button class="btn-outline btn-sm no-print" onclick="logout()">Ø®Ø±ÙˆØ¬</button>
   </div>
   <div class="tabs no-print">
-    <div class="tab ${adminTab==='members'?'active':''}" onclick="adminTab='members';renderAdmin()">ÇáÃÚÖÇÁ</div>
-    <div class="tab ${adminTab==='schedule'?'active':''}" onclick="adminTab='schedule';renderAdmin()">ÇáÌÏæá</div>
-    <div class="tab ${adminTab==='attend'?'active':''}" onclick="adminTab='attend';renderAdmin()">ÊÓÌíá ÇáÍÖæÑ</div>
-    <div class="tab ${adminTab==='reports'?'active':''}" onclick="adminTab='reports';renderAdmin()">ÇáÊŞÇÑíÑ</div>
-    <div class="tab ${adminTab==='settings'?'active':''}" onclick="adminTab='settings';renderAdmin()">ÇáÅÚÏÇÏÇÊ</div>
+    <div class="tab ${adminTab==='members'?'active':''}" onclick="adminTab='members';renderAdmin()">Ø§Ù„Ø£Ø¹Ø¶Ø§Ø¡</div>
+    <div class="tab ${adminTab==='schedule'?'active':''}" onclick="adminTab='schedule';renderAdmin()">Ø§Ù„Ø¬Ø¯ÙˆÙ„</div>
+    <div class="tab ${adminTab==='attend'?'active':''}" onclick="adminTab='attend';renderAdmin()">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ±</div>
+    <div class="tab ${adminTab==='reports'?'active':''}" onclick="adminTab='reports';renderAdmin()">Ø§Ù„ØªÙ‚Ø§Ø±ÙŠØ±</div>
+    <div class="tab ${adminTab==='settings'?'active':''}" onclick="adminTab='settings';renderAdmin()">Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª</div>
   </div>
-  <div id="atab"><p class="muted center">ÌÇÑö ÇáÊÍãíá...</p></div>`;
+  <div id="atab"><p class="muted center">Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...</p></div>`;
   const fn = {members:renderAdminMembers, schedule:renderAdminSchedule, attend:renderAdminAttend, reports:renderAdminReports, settings:renderAdminSettings}[adminTab];
   await fn();
 }
@@ -302,43 +302,43 @@ async function renderAdminMembers(){
   const approved = users.filter(u=>u.status==='approved');
   document.getElementById('atab').innerHTML=`
   <div class="card">
-    <h3 style="margin-top:0">ØáÈÇÊ ÊÓÌíá ÌÏíÏÉ (${pending.length})</h3>
-    ${pending.length? `<table><tr><th>ÇáÇÓã</th><th>ÇáÑŞã ÇáŞæãì</th><th>ÇáßäíÓÉ</th><th></th></tr>
+    <h3 style="margin-top:0">Ø·Ù„Ø¨Ø§Øª ØªØ³Ø¬ÙŠÙ„ Ø¬Ø¯ÙŠØ¯Ø© (${pending.length})</h3>
+    ${pending.length? `<table><tr><th>Ø§Ù„Ø§Ø³Ù…</th><th>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰</th><th>Ø§Ù„ÙƒÙ†ÙŠØ³Ø©</th><th></th></tr>
     ${pending.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td>
-      <td><button class="btn-gold btn-sm" onclick="approveUser('${u.id}')">ãæÇİŞÉ</button>
-      <button class="btn-danger btn-sm" onclick="rejectUser('${u.id}')">ÑİÖ</button></td></tr>`).join('')}
-    </table>` : '<p class="muted">áÇ ÊæÌÏ ØáÈÇÊ ÌÏíÏÉ</p>'}
+      <td><button class="btn-gold btn-sm" onclick="approveUser('${u.id}')">Ù…ÙˆØ§ÙÙ‚Ø©</button>
+      <button class="btn-danger btn-sm" onclick="rejectUser('${u.id}')">Ø±ÙØ¶</button></td></tr>`).join('')}
+    </table>` : '<p class="muted">Ù„Ø§ ØªÙˆØ¬Ø¯ Ø·Ù„Ø¨Ø§Øª Ø¬Ø¯ÙŠØ¯Ø©</p>'}
   </div>
   <div class="card">
-    <h3 style="margin-top:0">ÇáÃÚÖÇÁ ÇáãİÚøáæä (${approved.length})</h3>
-    ${approved.length? `<table><tr><th>ÇáÇÓã</th><th>ÇáÑŞã ÇáŞæãì</th><th>ÇáßäíÓÉ</th><th>ÇáÍÇáÉ</th><th></th></tr>
-    ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td><span class="badge approved">ãİÚøá</span></td>
-      <td><button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">ÍĞİ</button></td></tr>`).join('')}
-    </table>` : '<p class="muted">áÇ íæÌÏ ÃÚÖÇÁ ÈÚÏ</p>'}
+    <h3 style="margin-top:0">Ø§Ù„Ø£Ø¹Ø¶Ø§Ø¡ Ø§Ù„Ù…ÙØ¹Ù‘Ù„ÙˆÙ† (${approved.length})</h3>
+    ${approved.length? `<table><tr><th>Ø§Ù„Ø§Ø³Ù…</th><th>Ø§Ù„Ø±Ù‚Ù… Ø§Ù„Ù‚ÙˆÙ…Ù‰</th><th>Ø§Ù„ÙƒÙ†ÙŠØ³Ø©</th><th>Ø§Ù„Ø­Ø§Ù„Ø©</th><th></th></tr>
+    ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td><span class="badge approved">Ù…ÙØ¹Ù‘Ù„</span></td>
+      <td><button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">Ø­Ø°Ù</button></td></tr>`).join('')}
+    </table>` : '<p class="muted">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø£Ø¹Ø¶Ø§Ø¡ Ø¨Ø¹Ø¯</p>'}
   </div>`;
 }
 async function approveUser(id){ await api(`/users/${id}/approve`,'POST'); renderAdminMembers(); }
 async function rejectUser(id){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); }
-async function removeUser(id){ if(confirm('ÍĞİ åĞÇ ÇáÚÖæ äåÇÆíÇğ¿')){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); } }
+async function removeUser(id){ if(confirm('Ø­Ø°Ù Ù‡Ø°Ø§ Ø§Ù„Ø¹Ø¶Ùˆ Ù†Ù‡Ø§Ø¦ÙŠØ§Ù‹ØŸ')){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); } }
 
 async function renderAdminSchedule(){
   const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('atab').innerHTML=`
   <div class="card">
-    <h3 style="margin-top:0">ÅÖÇİÉ ãÍÇÖÑÉ ááÌÏæá</h3>
+    <h3 style="margin-top:0">Ø¥Ø¶Ø§ÙØ© Ù…Ø­Ø§Ø¶Ø±Ø© Ù„Ù„Ø¬Ø¯ÙˆÙ„</h3>
     <div class="row">
-      <div class="field"><label>ãæÖæÚ ÇáãÍÇÖÑÉ</label><input id="s-title"></div>
-      <div class="field"><label>ÇáÊÇÑíÎ</label><input id="s-date" type="date" value="${todayISO()}"></div>
-      <div class="field"><label>ÇáæŞÊ</label><input id="s-time" type="time"></div>
+      <div class="field"><label>Ù…ÙˆØ¶ÙˆØ¹ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø©</label><input id="s-title"></div>
+      <div class="field"><label>Ø§Ù„ØªØ§Ø±ÙŠØ®</label><input id="s-date" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>Ø§Ù„ÙˆÙ‚Øª</label><input id="s-time" type="time"></div>
     </div>
-    <button class="btn-navy" onclick="addLecture()">ÅÖÇİÉ ááÌÏæá</button>
+    <button class="btn-navy" onclick="addLecture()">Ø¥Ø¶Ø§ÙØ© Ù„Ù„Ø¬Ø¯ÙˆÙ„</button>
   </div>
   <div class="card">
-    <h3 style="margin-top:0">ÇáÌÏæá ÇáÍÇáì</h3>
-    ${lec.length? `<table><tr><th>ÇáãæÖæÚ</th><th>ÇáÊÇÑíÎ</th><th>ÇáæŞÊ</th><th></th></tr>
+    <h3 style="margin-top:0">Ø§Ù„Ø¬Ø¯ÙˆÙ„ Ø§Ù„Ø­Ø§Ù„Ù‰</h3>
+    ${lec.length? `<table><tr><th>Ø§Ù„Ù…ÙˆØ¶ÙˆØ¹</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø§Ù„ÙˆÙ‚Øª</th><th></th></tr>
     ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td>
-      <td><button class="btn-danger btn-sm" onclick="delLecture('${l.id}')">ÍĞİ</button></td></tr>`).join('')}
-    </table>`:'<p class="muted">ÇáÌÏæá İÇÑÛ</p>'}
+      <td><button class="btn-danger btn-sm" onclick="delLecture('${l.id}')">Ø­Ø°Ù</button></td></tr>`).join('')}
+    </table>`:'<p class="muted">Ø§Ù„Ø¬Ø¯ÙˆÙ„ ÙØ§Ø±Øº</p>'}
   </div>`;
 }
 async function addLecture(){
@@ -349,21 +349,21 @@ async function addLecture(){
   await api('/lectures','POST',{title,date,time});
   renderAdminSchedule();
 }
-async function delLecture(id){ if(confirm('ÍĞİ åĞå ÇáãÍÇÖÑÉ æÓÌáÇÊ ÍÖæÑåÇ¿')){ await api(`/lectures/${id}`,'DELETE'); renderAdminSchedule(); } }
+async function delLecture(id){ if(confirm('Ø­Ø°Ù Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø© ÙˆØ³Ø¬Ù„Ø§Øª Ø­Ø¶ÙˆØ±Ù‡Ø§ØŸ')){ await api(`/lectures/${id}`,'DELETE'); renderAdminSchedule(); } }
 
 async function renderAdminAttend(){
   const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('atab').innerHTML=`
   <div class="card no-print">
-    <h3 style="margin-top:0">ÊÓÌíá ÇáÍÖæÑ Çáíæãì</h3>
-    <div class="field"><label>ÇÎÊÑ ãÍÇÖÑÉ (ÍÓÈ ÇáÊÇÑíÎ)</label>
+    <h3 style="margin-top:0">ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø­Ø¶ÙˆØ± Ø§Ù„ÙŠÙˆÙ…Ù‰</h3>
+    <div class="field"><label>Ø§Ø®ØªØ± Ù…Ø­Ø§Ø¶Ø±Ø© (Ø­Ø³Ø¨ Ø§Ù„ØªØ§Ø±ÙŠØ®)</label>
       <select id="a-select" onchange="selectedLectureId=this.value;renderAdminAttend()">
-        <option value="">-- ÇÎÊÑ --</option>
+        <option value="">-- Ø§Ø®ØªØ± --</option>
         ${lec.map(l=>`<option value="${l.id}" ${selectedLectureId===l.id?'selected':''}>${l.date} - ${l.title}</option>`).join('')}
       </select>
     </div>
   </div>
-  <div id="lecinfo"><p class="muted center">${selectedLectureId? 'ÌÇÑö ÇáÊÍãíá...':''}</p></div>`;
+  <div id="lecinfo"><p class="muted center">${selectedLectureId? 'Ø¬Ø§Ø±Ù Ø§Ù„ØªØ­Ù…ÙŠÙ„...':''}</p></div>`;
   if(selectedLectureId) await renderLectureAttendPanel(lec.find(l=>l.id===selectedLectureId));
 }
 async function renderLectureAttendPanel(l){
@@ -373,21 +373,21 @@ async function renderLectureAttendPanel(l){
   document.getElementById('lecinfo').innerHTML=`
   <div class="card">
     <div class="qr-print">
-      <div class="small-title">ßæÏ ÇáãÍÇÖÑÉ</div>
+      <div class="small-title">ÙƒÙˆØ¯ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø©</div>
       <h3>${l.title} - ${l.date}</h3>
       <div id="qrbox"></div>
       <p class="muted">${l.code}</p>
-      <button class="btn-outline btn-sm no-print" onclick="window.print()">ØÈÇÚÉ ÇáßæÏ</button>
+      <button class="btn-outline btn-sm no-print" onclick="window.print()">Ø·Ø¨Ø§Ø¹Ø© Ø§Ù„ÙƒÙˆØ¯</button>
     </div>
   </div>
   <div class="card no-print">
-    <h3 style="margin-top:0">ÊÓÌíá íÏæì ááÍÖæÑ (${att.length}/${approved.length})</h3>
-    <table><tr><th>ÇáÇÓã</th><th>ÇáßäíÓÉ</th><th>ÇáÍÇáÉ</th><th></th></tr>
+    <h3 style="margin-top:0">ØªØ³Ø¬ÙŠÙ„ ÙŠØ¯ÙˆÙ‰ Ù„Ù„Ø­Ø¶ÙˆØ± (${att.length}/${approved.length})</h3>
+    <table><tr><th>Ø§Ù„Ø§Ø³Ù…</th><th>Ø§Ù„ÙƒÙ†ÙŠØ³Ø©</th><th>Ø§Ù„Ø­Ø§Ù„Ø©</th><th></th></tr>
     ${approved.map(u=>{
       const present = att.some(a=>a.userId===u.id);
       return `<tr><td>${u.name}</td><td>${u.church}</td>
-        <td><span class="badge ${present?'present':'absent'}">${present?'ÍÇÖÑ':'ÛÇÆÈ'}</span></td>
-        <td><button class="btn-outline btn-sm" onclick="toggleAttend('${l.id}','${u.id}')">${present?'ÅáÛÇÁ':'ÊÍÖíÑ'}</button></td></tr>`;
+        <td><span class="badge ${present?'present':'absent'}">${present?'Ø­Ø§Ø¶Ø±':'ØºØ§Ø¦Ø¨'}</span></td>
+        <td><button class="btn-outline btn-sm" onclick="toggleAttend('${l.id}','${u.id}')">${present?'Ø¥Ù„ØºØ§Ø¡':'ØªØ­Ø¶ÙŠØ±'}</button></td></tr>`;
     }).join('')}
     </table>
   </div>`;
@@ -407,39 +407,39 @@ async function renderAdminReports(){
   document.getElementById('atab').innerHTML=`
   <div class="card">
     <div class="row no-print">
-      <button class="btn-outline btn-sm" onclick="window.print()">ØÈÇÚÉ ÇáÊŞÑíÑ</button>
+      <button class="btn-outline btn-sm" onclick="window.print()">Ø·Ø¨Ø§Ø¹Ø© Ø§Ù„ØªÙ‚Ø±ÙŠØ±</button>
     </div>
-    <h3 style="margin-top:0">ÇáÊŞÑíÑ ÇáÚÇã</h3>
-    <p>ÚÏÏ ÇáÃÚÖÇÁ: <b>${approved.length}</b> — ÚÏÏ ÇáãÍÇÖÑÇÊ: <b>${lectures.length}</b></p>
-    <p>äÓÈÉ ÇáÛíÇÈ ÇáÚÇãÉ: <b style="color:var(--danger)">${absenceRate}%</b></p>
+    <h3 style="margin-top:0">Ø§Ù„ØªÙ‚Ø±ÙŠØ± Ø§Ù„Ø¹Ø§Ù…</h3>
+    <p>Ø¹Ø¯Ø¯ Ø§Ù„Ø£Ø¹Ø¶Ø§Ø¡: <b>${approved.length}</b> â€” Ø¹Ø¯Ø¯ Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø§Øª: <b>${lectures.length}</b></p>
+    <p>Ù†Ø³Ø¨Ø© Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„Ø¹Ø§Ù…Ø©: <b style="color:var(--danger)">${absenceRate}%</b></p>
   </div>
   <div class="card">
-    <h3 style="margin-top:0">ÇáÛíÇÈ Çáíæãì (áßá ãÍÇÖÑÉ)</h3>
-    ${lectures.length? `<table><tr><th>ÇáãÍÇÖÑÉ</th><th>ÇáÊÇÑíÎ</th><th>ÍÇÖÑ</th><th>ÛÇÆÈ</th><th>äÓÈÉ ÇáÛíÇÈ</th></tr>
+    <h3 style="margin-top:0">Ø§Ù„ØºÙŠØ§Ø¨ Ø§Ù„ÙŠÙˆÙ…Ù‰ (Ù„ÙƒÙ„ Ù…Ø­Ø§Ø¶Ø±Ø©)</h3>
+    ${lectures.length? `<table><tr><th>Ø§Ù„Ù…Ø­Ø§Ø¶Ø±Ø©</th><th>Ø§Ù„ØªØ§Ø±ÙŠØ®</th><th>Ø­Ø§Ø¶Ø±</th><th>ØºØ§Ø¦Ø¨</th><th>Ù†Ø³Ø¨Ø© Ø§Ù„ØºÙŠØ§Ø¨</th></tr>
     ${lectures.map(l=>{
       const present = attendance.filter(a=>a.lectureId===l.id).length;
       const absent = approved.length-present;
       const pct = approved.length? ((absent/approved.length)*100).toFixed(0):0;
       return `<tr><td>${l.title}</td><td>${l.date}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
-    }).join('')}</table>`:'<p class="muted">áÇ ÊæÌÏ ãÍÇÖÑÇÊ</p>'}
+    }).join('')}</table>`:'<p class="muted">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø­Ø§Ø¶Ø±Ø§Øª</p>'}
   </div>
   <div class="card">
-    <h3 style="margin-top:0">ÛíÇÈ ßá ÚÖæ</h3>
-    ${approved.length? `<table><tr><th>ÇáÇÓã</th><th>ÇáßäíÓÉ</th><th>ÍÖÑ</th><th>ÛÇÈ</th><th>äÓÈÉ ÇáÛíÇÈ</th></tr>
+    <h3 style="margin-top:0">ØºÙŠØ§Ø¨ ÙƒÙ„ Ø¹Ø¶Ùˆ</h3>
+    ${approved.length? `<table><tr><th>Ø§Ù„Ø§Ø³Ù…</th><th>Ø§Ù„ÙƒÙ†ÙŠØ³Ø©</th><th>Ø­Ø¶Ø±</th><th>ØºØ§Ø¨</th><th>Ù†Ø³Ø¨Ø© Ø§Ù„ØºÙŠØ§Ø¨</th></tr>
     ${approved.map(u=>{
       const present = attendance.filter(a=>a.userId===u.id).length;
       const absent = lectures.length-present;
       const pct = lectures.length? ((absent/lectures.length)*100).toFixed(0):0;
       return `<tr><td>${u.name}</td><td>${u.church}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
-    }).join('')}</table>`:'<p class="muted">áÇ íæÌÏ ÃÚÖÇÁ</p>'}
+    }).join('')}</table>`:'<p class="muted">Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ø£Ø¹Ø¶Ø§Ø¡</p>'}
   </div>`;
 }
 function renderAdminSettings(){
   document.getElementById('atab').innerHTML=`
   <div class="card" style="max-width:400px">
-    <h3 style="margin-top:0">ÊÛííÑ ßáãÉ ãÑæÑ ÇáãÏíÑ</h3>
-    <div class="field"><label>ßáãÉ ÇáãÑæÑ ÇáÌÏíÏÉ</label><input id="ap-new" type="password"></div>
-    <button class="btn-navy" onclick="changeAdminPass()">ÍİÙ</button>
+    <h3 style="margin-top:0">ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ù…Ø±ÙˆØ± Ø§Ù„Ù…Ø¯ÙŠØ±</h3>
+    <div class="field"><label>ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ± Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©</label><input id="ap-new" type="password"></div>
+    <button class="btn-navy" onclick="changeAdminPass()">Ø­ÙØ¸</button>
     <div id="apmsg"></div>
   </div>`;
 }
@@ -447,7 +447,7 @@ async function changeAdminPass(){
   const v=document.getElementById('ap-new').value;
   try{
     await api('/admin/change-password','POST',{newPassword:v});
-    document.getElementById('apmsg').innerHTML='<div class="msg ok">Êã ÊÛííÑ ßáãÉ ÇáãÑæÑ</div>';
+    document.getElementById('apmsg').innerHTML='<div class="msg ok">ØªÙ… ØªØºÙŠÙŠØ± ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±</div>';
   }catch(e){ document.getElementById('apmsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
 }
 
