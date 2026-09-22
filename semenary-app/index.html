@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ﬂ·Ì… «·»«»« ﬂÌ—·” Ê«·»«»« ‘‰Êœ… «·≈ﬂ·Ì—ÌﬂÌ… - «·„Õ·… «·ﬂ»—Ï</title>
+<link rel="icon" href="/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+<style>
+:root{
+  --navy:#0e2140; --navy2:#16305a; --gold:#c9a24b; --gold-light:#e9d8a6;
+  --cream:#f7f3ea; --ink:#1c2230; --muted:#6b7280; --danger:#a33; --ok:#2e7d4f;
+  --card:#ffffff; --border:#e4ddc9;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Cairo',sans-serif;min-height:100%}
+h1,h2,h3{font-family:'Amiri',serif}
+header.top{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;padding:18px 20px calc(18px + env(safe-area-inset-top,0px));text-align:center;position:relative}
+header.top .logo{width:78px;height:78px;display:block;margin:0 auto 8px;border-radius:50%}
+header.top:before{content:"";position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+header.top h1{margin:0;font-size:20px;line-height:1.5}
+header.top p{margin:4px 0 0;color:var(--gold-light);font-size:13px}
+.wrap{max-width:920px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.field{flex:1;min-width:180px;margin-bottom:12px;text-align:right}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:14px;background:#fff}
+input:focus,select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+button{cursor:pointer;font-family:inherit;font-weight:700;border:none;border-radius:7px;padding:10px 18px;font-size:14px}
+button:disabled{opacity:.6;cursor:default}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--navy);color:var(--navy)}
+.btn-danger{background:#fbeaea;color:var(--danger)}
+.btn-sm{padding:6px 12px;font-size:12.5px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tab{padding:9px 16px;border-radius:20px;background:#fff;border:1px solid var(--border);font-weight:700;font-size:13px;cursor:pointer}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:8px;text-align:right;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:700}
+.badge{padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700}
+.badge.pending{background:#fff3d6;color:#8a6d1a}
+.badge.approved{background:#e1f3e7;color:var(--ok)}
+.badge.present{background:#e1f3e7;color:var(--ok)}
+.badge.absent{background:#fbeaea;color:var(--danger)}
+.muted{color:var(--muted);font-size:13px}
+.center{text-align:center}
+.hidden{display:none !important}
+.msg{padding:10px 14px;border-radius:7px;font-size:13.5px;margin-bottom:12px}
+.msg.err{background:#fbeaea;color:var(--danger)}
+.msg.ok{background:#e1f3e7;color:var(--ok)}
+#qrbox{width:100%;max-width:260px;margin:10px auto}
+video{width:100%;max-width:340px;border-radius:8px;background:#000}
+.qr-print{text-align:center;padding:20px;border:2px dashed var(--gold);border-radius:10px;margin-top:14px}
+.small-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+@media print{header.top,.no-print{display:none!important} body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top">
+  <img class="logo" src="/logo.png" alt="‘⁄«— «·ﬂ·Ì…">
+  <h1>ﬂ·Ì… «·»«»« ﬂÌ—·” ⁄„Êœ «·≈Ì„«‰ Ê«·»«»« ‘‰Êœ… «·À«·À «·≈ﬂ·Ì—ÌﬂÌ…</h1>
+  <p>›—⁄ «·„Õ·… «·ﬂ»—Ï</p>
+</header>
+<div class="wrap" id="app"></div>
+
+<script>
+// ---------- API helper ----------
+let TOKEN = sessionStorage.getItem('sem_token') || null;
+let ROLE = sessionStorage.getItem('sem_role') || null;
+let ME = null;
+
+async function api(path, method='GET', body){
+  const headers = {'Content-Type':'application/json'};
+  if(TOKEN) headers['Authorization'] = 'Bearer '+TOKEN;
+  const res = await fetch('/api'+path, {method, headers, body: body?JSON.stringify(body):undefined});
+  let data = {};
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok) throw new Error(data.error || 'ÕœÀ Œÿ√° Õ«Ê· „—… √Œ—Ï');
+  return data;
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7) }
+function todayISO(){ return new Date().toISOString().slice(0,10) }
+
+const app = document.getElementById('app');
+
+// ---------- router ----------
+async function render(){
+  if(!TOKEN){ renderLogin(); return; }
+  try{
+    if(ROLE==='admin'){ await renderAdmin(); } else { await renderMember(); }
+  }catch(e){
+    logout();
+  }
+}
+
+// ================= LOGIN / REGISTER =================
+let authMode='login';
+function renderLogin(){
+  app.innerHTML = `
+  <div class="card" style="max-width:440px;margin:20px auto">
+    <div class="tabs">
+      <div class="tab ${authMode==='login'?'active':''}" onclick="authMode='login';render()"> ”ÃÌ· «·œŒÊ·</div>
+      <div class="tab ${authMode==='register'?'active':''}" onclick="authMode='register';render()"> ”ÃÌ· ⁄÷Ê ÃœÌœ</div>
+    </div>
+    <div id="msgbox"></div>
+    ${authMode==='login' ? loginForm() : registerForm()}
+  </div>`;
+}
+function loginForm(){
+  return `
+  <div class="field"><label>«·—ﬁ„ «·ﬁÊ„Ï (√Ê "admin" ··„œÌ—)</label><input id="li-id" placeholder="«·—ﬁ„ «·ﬁÊ„Ï"></div>
+  <div class="field"><label>ﬂ·„… «·„—Ê—</label><input id="li-pass" type="password" placeholder="ﬂ·„… «·„—Ê—"></div>
+  <button class="btn-navy" style="width:100%" onclick="doLogin()">œŒÊ·</button>`;
+}
+function registerForm(){
+  return `
+  <div class="field"><label>«·«”„ »«·ﬂ«„·</label><input id="r-name"></div>
+  <div class="field"><label>«·—ﬁ„ «·ﬁÊ„Ï</label><input id="r-nid" maxlength="14"></div>
+  <div class="field"><label>«·ﬂ‰Ì”… «· «»⁄ ·Â«</label><input id="r-church"></div>
+  <div class="field"><label>ﬂ·„… «·„—Ê—</label><input id="r-pass" type="password"></div>
+  <button class="btn-gold" style="width:100%" onclick="doRegister()">≈—”«· ÿ·» «· ”ÃÌ·</button>
+  <p class="muted center" style="margin-top:10px">”Ì „  ›⁄Ì· Õ”«»ﬂ »⁄œ „Ê«›ﬁ… «·≈œ«—…</p>`;
+}
+function msg(text,type){ const b=document.getElementById('msgbox'); if(b) b.innerHTML = `<div class="msg ${type}">${text}</div>`; }
+
+async function doLogin(){
+  const id=document.getElementById('li-id').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  try{
+    const data = await api('/login','POST',{nationalId:id, password:pass});
+    TOKEN=data.token; ROLE=data.role; ME=data.user||null;
+    sessionStorage.setItem('sem_token',TOKEN); sessionStorage.setItem('sem_role',ROLE);
+    render();
+  }catch(e){ msg(e.message,'err'); }
+}
+async function doRegister(){
+  const name=document.getElementById('r-name').value.trim();
+  const nid=document.getElementById('r-nid').value.trim();
+  const church=document.getElementById('r-church').value.trim();
+  const pass=document.getElementById('r-pass').value;
+  if(!name||!nid||!church||!pass){ msg('„‰ ›÷·ﬂ √ﬂ„· Ã„Ì⁄ «·»Ì«‰« ','err'); return; }
+  try{
+    await api('/register','POST',{name, nationalId:nid, church, password:pass});
+    authMode='login'; render();
+    setTimeout(()=>msg(' „ ≈—”«· ÿ·»ﬂ »‰Ã«Õ° »«‰ Ÿ«— „Ê«›ﬁ… «·≈œ«—…','ok'),0);
+  }catch(e){ msg(e.message,'err'); }
+}
+async function logout(){
+  try{ if(TOKEN) await api('/logout','POST'); }catch(e){}
+  TOKEN=null; ROLE=null; ME=null;
+  sessionStorage.removeItem('sem_token'); sessionStorage.removeItem('sem_role');
+  render();
+}
+
+// ================= MEMBER VIEW =================
+let memberTab='profile';
+async function renderMember(){
+  if(!ME){ ME = await api('/me'); }
+  app.innerHTML = `
+  <div class="row" style="justify-content:space-between;align-items:center">
+    <h2 style="margin:0">√Â·«° ${ME.name}</h2>
+    <button class="btn-outline btn-sm no-print" onclick="logout()">Œ—ÊÃ</button>
+  </div>
+  <div class="tabs">
+    <div class="tab ${memberTab==='profile'?'active':''}" onclick="memberTab='profile';renderMember()">»Ì«‰« Ï</div>
+    <div class="tab ${memberTab==='schedule'?'active':''}" onclick="memberTab='schedule';renderMember()">ÃœÊ· «·„Õ«÷—« </div>
+    <div class="tab ${memberTab==='attend'?'active':''}" onclick="memberTab='attend';renderMember()"> ”ÃÌ· «·Õ÷Ê—</div>
+  </div>
+  <div id="mtab"><p class="muted center">Ã«—ˆ «· Õ„Ì·...</p></div>`;
+  if(memberTab==='profile') renderMemberProfile();
+  if(memberTab==='schedule') await renderScheduleView();
+  if(memberTab==='attend') await renderMemberAttend();
+}
+function renderMemberProfile(){
+  document.getElementById('mtab').innerHTML=`
+  <div class="card">
+    <div class="row">
+      <div class="field"><label>«·«”„</label><input id="p-name" value="${ME.name}"></div>
+      <div class="field"><label>«·ﬂ‰Ì”…</label><input id="p-church" value="${ME.church}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>«·—ﬁ„ «·ﬁÊ„Ï</label><input value="${ME.nationalId}" disabled></div>
+      <div class="field"><label>ﬂ·„… „—Ê— ÃœÌœ… (« —ﬂÂ« ›«—€… ·⁄œ„ «· €ÌÌ—)</label><input id="p-pass" type="password"></div>
+    </div>
+    <button class="btn-navy" onclick="saveProfile()">Õ›Ÿ «· ⁄œÌ·« </button>
+    <div id="pmsg"></div>
+  </div>`;
+}
+async function saveProfile(){
+  const name=document.getElementById('p-name').value.trim();
+  const church=document.getElementById('p-church').value.trim();
+  const password=document.getElementById('p-pass').value;
+  try{
+    await api('/me','PUT',{name, church, password: password||undefined});
+    if(name) ME.name=name; if(church) ME.church=church;
+    document.getElementById('pmsg').innerHTML='<div class="msg ok"> „ Õ›Ÿ «·»Ì«‰« </div>';
+  }catch(e){ document.getElementById('pmsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
+}
+async function renderScheduleView(){
+  const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('mtab').innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">ÃœÊ· „Õ«÷—«  «·ﬂ·Ì…</h3>
+    ${lec.length? `<table><tr><th>«·„Ê÷Ê⁄</th><th>«· «—ÌŒ</th><th>«·Êﬁ </th></tr>
+      ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td></tr>`).join('')}
+      </table>` : `<p class="muted">·„ Ì „ ≈÷«›… ÃœÊ· »⁄œ</p>`}
+  </div>`;
+}
+async function renderMemberAttend(){
+  document.getElementById('mtab').innerHTML=`
+  <div class="card center">
+    <h3 style="margin-top:0">„”Õ ﬂÊœ «·„Õ«÷—…</h3>
+    <p class="muted">ÊÃ¯Â ﬂ«„Ì—« «·„Ê»«Ì· ‰ÕÊ ﬂÊœ «·„Õ«÷—… «·Ÿ«Â— „‰ «·„”ƒÊ·</p>
+    <button class="btn-gold" onclick="startScan()">› Õ «·ﬂ«„Ì—« Ê«·„”Õ</button>
+    <video id="scan-video" class="hidden" playsinline></video>
+    <canvas id="scan-canvas" class="hidden"></canvas>
+    <div id="scan-result"></div>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">”Ã· Õ÷Ê—Ï</h3>
+    <div id="my-att-table"><p class="muted">Ã«—ˆ «· Õ„Ì·...</p></div>
+  </div>`;
+  await refreshMyAttendanceTable();
+}
+async function refreshMyAttendanceTable(){
+  const [mine, lectures] = await Promise.all([api('/attendance/mine'), api('/lectures')]);
+  const box = document.getElementById('my-att-table');
+  if(!lectures.length){ box.innerHTML='<p class="muted">·«  ÊÃœ „Õ«÷—«  „”Ã·… »⁄œ</p>'; return; }
+  const rows = lectures.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(l=>{
+    const present = mine.some(a=>a.lectureId===l.id);
+    return `<tr><td>${l.title}</td><td>${l.date}</td><td><span class="badge ${present?'present':'absent'}">${present?'Õ«÷—':'€«∆»'}</span></td></tr>`;
+  }).join('');
+  box.innerHTML = `<table><tr><th>«·„Õ«÷—…</th><th>«· «—ÌŒ</th><th>«·Õ«·…</th></tr>${rows}</table>`;
+}
+let scanStream=null;
+function startScan(){
+  const video=document.getElementById('scan-video');
+  const canvas=document.getElementById('scan-canvas');
+  video.classList.remove('hidden');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+    scanStream=stream; video.srcObject=stream; video.play();
+    requestAnimationFrame(tick);
+  }).catch(()=>{ document.getElementById('scan-result').innerHTML='<div class="msg err"> ⁄–— › Õ «·ﬂ«„Ì—«°  √ﬂœ „‰ «·”„«Õ »«·Ê’Ê·</div>'; });
+  function tick(){
+    if(!scanStream) return;
+    if(video.readyState===video.HAVE_ENOUGH_DATA){
+      canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      const img=ctx.getImageData(0,0,canvas.width,canvas.height);
+      const code=jsQR(img.data,img.width,img.height);
+      if(code){ handleScanResult(code.data); return; }
+    }
+    requestAnimationFrame(tick);
+  }
+}
+function stopScan(){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } document.getElementById('scan-video')?.classList.add('hidden'); }
+async function handleScanResult(data){
+  stopScan();
+  const box=document.getElementById('scan-result');
+  try{
+    const result = await api('/attendance/scan','POST',{code:data.trim()});
+    box.innerHTML = result.already
+      ? `<div class="msg ok"> „  ”ÃÌ· Õ÷Ê—ﬂ „”»ﬁ« ›Ï: ${result.title}</div>`
+      : `<div class="msg ok"> „  ”ÃÌ· Õ÷Ê—ﬂ »‰Ã«Õ ›Ï „Õ«÷—…: ${result.title}</div>`;
+    await refreshMyAttendanceTable();
+  }catch(e){ box.innerHTML = `<div class="msg err">${e.message}</div>`; }
+}
+
+// ================= ADMIN VIEW =================
+let adminTab='members';
+let selectedLectureId=null;
+async function renderAdmin(){
+  app.innerHTML=`
+  <div class="row" style="justify-content:space-between;align-items:center">
+    <h2 style="margin:0">·ÊÕ…  Õﬂ„ «·≈œ«—…</h2>
+    <button class="btn-outline btn-sm no-print" onclick="logout()">Œ—ÊÃ</button>
+  </div>
+  <div class="tabs no-print">
+    <div class="tab ${adminTab==='members'?'active':''}" onclick="adminTab='members';renderAdmin()">«·√⁄÷«¡</div>
+    <div class="tab ${adminTab==='schedule'?'active':''}" onclick="adminTab='schedule';renderAdmin()">«·ÃœÊ·</div>
+    <div class="tab ${adminTab==='attend'?'active':''}" onclick="adminTab='attend';renderAdmin()"> ”ÃÌ· «·Õ÷Ê—</div>
+    <div class="tab ${adminTab==='reports'?'active':''}" onclick="adminTab='reports';renderAdmin()">«· ﬁ«—Ì—</div>
+    <div class="tab ${adminTab==='settings'?'active':''}" onclick="adminTab='settings';renderAdmin()">«·≈⁄œ«œ« </div>
+  </div>
+  <div id="atab"><p class="muted center">Ã«—ˆ «· Õ„Ì·...</p></div>`;
+  const fn = {members:renderAdminMembers, schedule:renderAdminSchedule, attend:renderAdminAttend, reports:renderAdminReports, settings:renderAdminSettings}[adminTab];
+  await fn();
+}
+async function renderAdminMembers(){
+  const users = await api('/users');
+  const pending = users.filter(u=>u.status==='pending');
+  const approved = users.filter(u=>u.status==='approved');
+  document.getElementById('atab').innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">ÿ·»«   ”ÃÌ· ÃœÌœ… (${pending.length})</h3>
+    ${pending.length? `<table><tr><th>«·«”„</th><th>«·—ﬁ„ «·ﬁÊ„Ï</th><th>«·ﬂ‰Ì”…</th><th></th></tr>
+    ${pending.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td>
+      <td><button class="btn-gold btn-sm" onclick="approveUser('${u.id}')">„Ê«›ﬁ…</button>
+      <button class="btn-danger btn-sm" onclick="rejectUser('${u.id}')">—›÷</button></td></tr>`).join('')}
+    </table>` : '<p class="muted">·«  ÊÃœ ÿ·»«  ÃœÌœ…</p>'}
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">«·√⁄÷«¡ «·„›⁄¯·Ê‰ (${approved.length})</h3>
+    ${approved.length? `<table><tr><th>«·«”„</th><th>«·—ﬁ„ «·ﬁÊ„Ï</th><th>«·ﬂ‰Ì”…</th><th>«·Õ«·…</th><th></th></tr>
+    ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td><span class="badge approved">„›⁄¯·</span></td>
+      <td><button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">Õ–›</button></td></tr>`).join('')}
+    </table>` : '<p class="muted">·« ÌÊÃœ √⁄÷«¡ »⁄œ</p>'}
+  </div>`;
+}
+async function approveUser(id){ await api(`/users/${id}/approve`,'POST'); renderAdminMembers(); }
+async function rejectUser(id){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); }
+async function removeUser(id){ if(confirm('Õ–› Â–« «·⁄÷Ê ‰Â«∆Ì«ø')){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); } }
+
+async function renderAdminSchedule(){
+  const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('atab').innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">≈÷«›… „Õ«÷—… ··ÃœÊ·</h3>
+    <div class="row">
+      <div class="field"><label>„Ê÷Ê⁄ «·„Õ«÷—…</label><input id="s-title"></div>
+      <div class="field"><label>«· «—ÌŒ</label><input id="s-date" type="date" value="${todayISO()}"></div>
+      <div class="field"><label>«·Êﬁ </label><input id="s-time" type="time"></div>
+    </div>
+    <button class="btn-navy" onclick="addLecture()">≈÷«›… ··ÃœÊ·</button>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">«·ÃœÊ· «·Õ«·Ï</h3>
+    ${lec.length? `<table><tr><th>«·„Ê÷Ê⁄</th><th>«· «—ÌŒ</th><th>«·Êﬁ </th><th></th></tr>
+    ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td>
+      <td><button class="btn-danger btn-sm" onclick="delLecture('${l.id}')">Õ–›</button></td></tr>`).join('')}
+    </table>`:'<p class="muted">«·ÃœÊ· ›«—€</p>'}
+  </div>`;
+}
+async function addLecture(){
+  const title=document.getElementById('s-title').value.trim();
+  const date=document.getElementById('s-date').value;
+  const time=document.getElementById('s-time').value;
+  if(!title||!date) return;
+  await api('/lectures','POST',{title,date,time});
+  renderAdminSchedule();
+}
+async function delLecture(id){ if(confirm('Õ–› Â–Â «·„Õ«÷—… Ê”Ã·«  Õ÷Ê—Â«ø')){ await api(`/lectures/${id}`,'DELETE'); renderAdminSchedule(); } }
+
+async function renderAdminAttend(){
+  const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('atab').innerHTML=`
+  <div class="card no-print">
+    <h3 style="margin-top:0"> ”ÃÌ· «·Õ÷Ê— «·ÌÊ„Ï</h3>
+    <div class="field"><label>«Œ — „Õ«÷—… (Õ”» «· «—ÌŒ)</label>
+      <select id="a-select" onchange="selectedLectureId=this.value;renderAdminAttend()">
+        <option value="">-- «Œ — --</option>
+        ${lec.map(l=>`<option value="${l.id}" ${selectedLectureId===l.id?'selected':''}>${l.date} - ${l.title}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+  <div id="lecinfo"><p class="muted center">${selectedLectureId? 'Ã«—ˆ «· Õ„Ì·...':''}</p></div>`;
+  if(selectedLectureId) await renderLectureAttendPanel(lec.find(l=>l.id===selectedLectureId));
+}
+async function renderLectureAttendPanel(l){
+  if(!l){ document.getElementById('lecinfo').innerHTML=''; return; }
+  const [users, att] = await Promise.all([api('/users'), api(`/attendance?lectureId=${l.id}`)]);
+  const approved = users.filter(u=>u.status==='approved');
+  document.getElementById('lecinfo').innerHTML=`
+  <div class="card">
+    <div class="qr-print">
+      <div class="small-title">ﬂÊœ «·„Õ«÷—…</div>
+      <h3>${l.title} - ${l.date}</h3>
+      <div id="qrbox"></div>
+      <p class="muted">${l.code}</p>
+      <button class="btn-outline btn-sm no-print" onclick="window.print()">ÿ»«⁄… «·ﬂÊœ</button>
+    </div>
+  </div>
+  <div class="card no-print">
+    <h3 style="margin-top:0"> ”ÃÌ· ÌœÊÏ ··Õ÷Ê— (${att.length}/${approved.length})</h3>
+    <table><tr><th>«·«”„</th><th>«·ﬂ‰Ì”…</th><th>«·Õ«·…</th><th></th></tr>
+    ${approved.map(u=>{
+      const present = att.some(a=>a.userId===u.id);
+      return `<tr><td>${u.name}</td><td>${u.church}</td>
+        <td><span class="badge ${present?'present':'absent'}">${present?'Õ«÷—':'€«∆»'}</span></td>
+        <td><button class="btn-outline btn-sm" onclick="toggleAttend('${l.id}','${u.id}')">${present?'≈·€«¡':' Õ÷Ì—'}</button></td></tr>`;
+    }).join('')}
+    </table>
+  </div>`;
+  new QRCode(document.getElementById('qrbox'),{text:l.code,width:180,height:180,colorDark:'#0e2140',colorLight:'#fff'});
+}
+async function toggleAttend(lid,uid_){
+  await api('/attendance/toggle','POST',{lectureId:lid, userId:uid_});
+  const lec = await api('/lectures');
+  await renderLectureAttendPanel(lec.find(l=>l.id===lid));
+}
+
+async function renderAdminReports(){
+  const [users, lectures, attendance] = await Promise.all([api('/users'), api('/lectures'), api('/attendance')]);
+  const approved = users.filter(u=>u.status==='approved');
+  const totalSlots = approved.length*lectures.length;
+  const absenceRate = totalSlots? (((totalSlots-attendance.length)/totalSlots)*100).toFixed(1):'0';
+  document.getElementById('atab').innerHTML=`
+  <div class="card">
+    <div class="row no-print">
+      <button class="btn-outline btn-sm" onclick="window.print()">ÿ»«⁄… «· ﬁ—Ì—</button>
+    </div>
+    <h3 style="margin-top:0">«· ﬁ—Ì— «·⁄«„</h3>
+    <p>⁄œœ «·√⁄÷«¡: <b>${approved.length}</b> ó ⁄œœ «·„Õ«÷—« : <b>${lectures.length}</b></p>
+    <p>‰”»… «·€Ì«» «·⁄«„…: <b style="color:var(--danger)">${absenceRate}%</b></p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">«·€Ì«» «·ÌÊ„Ï (·ﬂ· „Õ«÷—…)</h3>
+    ${lectures.length? `<table><tr><th>«·„Õ«÷—…</th><th>«· «—ÌŒ</th><th>Õ«÷—</th><th>€«∆»</th><th>‰”»… «·€Ì«»</th></tr>
+    ${lectures.map(l=>{
+      const present = attendance.filter(a=>a.lectureId===l.id).length;
+      const absent = approved.length-present;
+      const pct = approved.length? ((absent/approved.length)*100).toFixed(0):0;
+      return `<tr><td>${l.title}</td><td>${l.date}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
+    }).join('')}</table>`:'<p class="muted">·«  ÊÃœ „Õ«÷—« </p>'}
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">€Ì«» ﬂ· ⁄÷Ê</h3>
+    ${approved.length? `<table><tr><th>«·«”„</th><th>«·ﬂ‰Ì”…</th><th>Õ÷—</th><th>€«»</th><th>‰”»… «·€Ì«»</th></tr>
+    ${approved.map(u=>{
+      const present = attendance.filter(a=>a.userId===u.id).length;
+      const absent = lectures.length-present;
+      const pct = lectures.length? ((absent/lectures.length)*100).toFixed(0):0;
+      return `<tr><td>${u.name}</td><td>${u.church}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
+    }).join('')}</table>`:'<p class="muted">·« ÌÊÃœ √⁄÷«¡</p>'}
+  </div>`;
+}
+function renderAdminSettings(){
+  document.getElementById('atab').innerHTML=`
+  <div class="card" style="max-width:400px">
+    <h3 style="margin-top:0"> €ÌÌ— ﬂ·„… „—Ê— «·„œÌ—</h3>
+    <div class="field"><label>ﬂ·„… «·„—Ê— «·ÃœÌœ…</label><input id="ap-new" type="password"></div>
+    <button class="btn-navy" onclick="changeAdminPass()">Õ›Ÿ</button>
+    <div id="apmsg"></div>
+  </div>`;
+}
+async function changeAdminPass(){
+  const v=document.getElementById('ap-new').value;
+  try{
+    await api('/admin/change-password','POST',{newPassword:v});
+    document.getElementById('apmsg').innerHTML='<div class="msg ok"> „  €ÌÌ— ﬂ·„… «·„—Ê—</div>';
+  }catch(e){ document.getElementById('apmsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
+}
+
+render();
+</script>
+</body>
+</html>
