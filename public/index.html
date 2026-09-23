@@ -221,9 +221,16 @@ async function renderMemberAttend(){
     <h3 style="margin-top:0">مسح كود المحاضرة</h3>
     <p class="muted">وجّه كاميرا الموبايل نحو كود المحاضرة الظاهر من المسؤول</p>
     <button class="btn-gold" onclick="startScan()">فتح الكاميرا والمسح</button>
-    <video id="scan-video" class="hidden" playsinline></video>
+    <video id="scan-video" class="hidden" playsinline muted></video>
     <canvas id="scan-canvas" class="hidden"></canvas>
     <div id="scan-result"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <p class="muted" style="margin-bottom:8px">لو المسح مش شغال، اكتب كود المحاضرة يدويًا (مكتوب تحت الـ QR):</p>
+      <div class="row" style="justify-content:center">
+        <input id="manual-code" placeholder="مثال: LEC-AB12CD34" style="max-width:220px;text-align:center">
+        <button class="btn-navy" onclick="submitManualCode()">تسجيل</button>
+      </div>
+    </div>
   </div>
   <div class="card">
     <h3 style="margin-top:0">سجل حضورى</h3>
@@ -243,25 +250,44 @@ async function refreshMyAttendanceTable(){
 }
 let scanStream=null;
 function startScan(){
+  if(typeof jsQR==='undefined'){
+    document.getElementById('scan-result').innerHTML='<div class="msg err">تعذر تحميل مكتبة قراءة الكود (مشكلة اتصال بالإنترنت)، استخدم الإدخال اليدوى تحت</div>';
+    return;
+  }
   const video=document.getElementById('scan-video');
   const canvas=document.getElementById('scan-canvas');
   video.classList.remove('hidden');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(stream=>{
+  document.getElementById('scan-result').innerHTML='';
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}}).then(stream=>{
     scanStream=stream; video.srcObject=stream; video.play();
     requestAnimationFrame(tick);
-  }).catch(()=>{ document.getElementById('scan-result').innerHTML='<div class="msg err">تعذر فتح الكاميرا، تأكد من السماح بالوصول</div>'; });
-  function tick(){
+  }).catch(()=>{ document.getElementById('scan-result').innerHTML='<div class="msg err">تعذر فتح الكاميرا، تأكد من السماح بالوصول أو استخدم الإدخال اليدوى تحت</div>'; });
+  let lastTry=0;
+  function tick(ts){
     if(!scanStream) return;
-    if(video.readyState===video.HAVE_ENOUGH_DATA){
-      canvas.width=video.videoWidth; canvas.height=video.videoHeight;
-      const ctx=canvas.getContext('2d');
-      ctx.drawImage(video,0,0,canvas.width,canvas.height);
-      const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-      const code=jsQR(img.data,img.width,img.height);
-      if(code){ handleScanResult(code.data); return; }
+    if(video.readyState===video.HAVE_ENOUGH_DATA && ts-lastTry>150){
+      lastTry=ts;
+      try{
+        const maxW=480;
+        const scale=Math.min(1, maxW/video.videoWidth);
+        canvas.width=Math.round(video.videoWidth*scale);
+        canvas.height=Math.round(video.videoHeight*scale);
+        const ctx=canvas.getContext('2d',{willReadFrequently:true});
+        ctx.drawImage(video,0,0,canvas.width,canvas.height);
+        const img=ctx.getImageData(0,0,canvas.width,canvas.height);
+        const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
+        if(code && code.data){ handleScanResult(code.data); return; }
+      }catch(err){ /* ignore single-frame errors, keep scanning */ }
     }
     requestAnimationFrame(tick);
   }
+}
+async function submitManualCode(){
+  const input=document.getElementById('manual-code');
+  const code=input.value.trim();
+  if(!code) return;
+  await handleScanResult(code);
+  input.value='';
 }
 function stopScan(){ if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream=null; } document.getElementById('scan-video')?.classList.add('hidden'); }
 async function handleScanResult(data){
