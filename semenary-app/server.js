@@ -25,10 +25,16 @@ function auth(requiredRole) {
 }
 
 // ================= AUTH =================
+const GRADES = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة'];
+const LECTURE_GRADES = [...GRADES, 'عام'];
+
 app.post('/api/register', (req, res) => {
-  const { name, nationalId, church, password } = req.body || {};
-  if (!name || !nationalId || !church || !password) {
+  const { name, nationalId, church, password, grade } = req.body || {};
+  if (!name || !nationalId || !church || !password || !grade) {
     return res.status(400).json({ error: 'من فضلك أكمل جميع البيانات' });
+  }
+  if (!GRADES.includes(grade)) {
+    return res.status(400).json({ error: 'من فضلك اختر الفرقة بشكل صحيح' });
   }
   const data = db.load();
   if (nationalId === 'admin' || data.users.some(u => u.nationalId === nationalId)) {
@@ -36,7 +42,7 @@ app.post('/api/register', (req, res) => {
   }
   data.users.push({
     id: crypto.randomUUID(),
-    name, nationalId, church,
+    name, nationalId, church, grade,
     passwordHash: bcrypt.hashSync(password, 10),
     status: 'pending',
     createdAt: Date.now()
@@ -79,7 +85,7 @@ app.get('/api/me', auth('member'), (req, res) => {
   const data = db.load();
   const u = data.users.find(x => x.id === req.session.userId);
   if (!u) return res.status(404).json({ error: 'الحساب غير موجود' });
-  res.json({ id: u.id, name: u.name, church: u.church, nationalId: u.nationalId });
+  res.json({ id: u.id, name: u.name, church: u.church, nationalId: u.nationalId, grade: u.grade || null });
 });
 
 app.put('/api/me', auth('member'), (req, res) => {
@@ -100,11 +106,12 @@ app.get('/api/lectures', auth(), (req, res) => {
 });
 
 app.post('/api/lectures', auth('admin'), (req, res) => {
-  const { title, date, time } = req.body || {};
-  if (!title || !date) return res.status(400).json({ error: 'أكمل بيانات المحاضرة' });
+  const { title, date, time, grade } = req.body || {};
+  if (!title || !date || !grade) return res.status(400).json({ error: 'أكمل بيانات المحاضرة' });
+  if (!LECTURE_GRADES.includes(grade)) return res.status(400).json({ error: 'اختر الفرقة المستهدفة بشكل صحيح' });
   const data = db.load();
   const lecture = {
-    id: crypto.randomUUID(), title, date, time: time || '',
+    id: crypto.randomUUID(), title, date, time: time || '', grade,
     code: 'LEC-' + crypto.randomBytes(4).toString('hex').toUpperCase()
   };
   data.lectures.push(lecture);
@@ -123,7 +130,7 @@ app.delete('/api/lectures/:id', auth('admin'), (req, res) => {
 // ================= MEMBERS MANAGEMENT (admin) =================
 app.get('/api/users', auth('admin'), (req, res) => {
   const data = db.load();
-  res.json(data.users.map(u => ({ id: u.id, name: u.name, nationalId: u.nationalId, church: u.church, status: u.status })));
+  res.json(data.users.map(u => ({ id: u.id, name: u.name, nationalId: u.nationalId, church: u.church, status: u.status, grade: u.grade || null })));
 });
 
 app.post('/api/users/:id/approve', auth('admin'), (req, res) => {
@@ -131,6 +138,20 @@ app.post('/api/users/:id/approve', auth('admin'), (req, res) => {
   const u = data.users.find(x => x.id === req.params.id);
   if (!u) return res.status(404).json({ error: 'العضو غير موجود' });
   u.status = 'approved';
+  db.save(data);
+  res.json({ ok: true });
+});
+
+app.put('/api/users/:id', auth('admin'), (req, res) => {
+  const data = db.load();
+  const u = data.users.find(x => x.id === req.params.id);
+  if (!u) return res.status(404).json({ error: 'العضو غير موجود' });
+  const { name, church, grade, password } = req.body || {};
+  if (grade && !GRADES.includes(grade)) return res.status(400).json({ error: 'فرقة غير صحيحة' });
+  if (name) u.name = name;
+  if (church) u.church = church;
+  if (grade) u.grade = grade;
+  if (password) u.passwordHash = bcrypt.hashSync(password, 10);
   db.save(data);
   res.json({ ok: true });
 });
