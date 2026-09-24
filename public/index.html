@@ -338,6 +338,7 @@ async function renderAdmin(){
 }
 let editingUserId=null;
 let adminUsersCache=[];
+let showImportBox=false;
 async function renderAdminMembers(){
   const users = await api('/users');
   adminUsersCache = users;
@@ -353,15 +354,54 @@ async function renderAdminMembers(){
     </table>` : '<p class="muted">لا توجد طلبات جديدة</p>'}
   </div>
   <div class="card">
-    <h3 style="margin-top:0">الأعضاء المفعّلون (${approved.length})</h3>
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h3 style="margin:0">الأعضاء المفعّلون (${approved.length})</h3>
+      <button class="btn-outline btn-sm" onclick="showImportBox=!showImportBox;renderAdminMembers()">استيراد أعضاء دفعة واحدة</button>
+    </div>
     ${approved.length? `<table><tr><th>الاسم</th><th>الرقم القومى</th><th>الكنيسة</th><th>الفرقة</th><th></th></tr>
     ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td>${u.grade||'<span class="badge pending">غير محددة</span>'}</td>
       <td><button class="btn-outline btn-sm" onclick="editingUserId='${u.id}';renderAdminMembers()">تعديل</button>
       <button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">حذف</button></td></tr>`).join('')}
     </table>` : '<p class="muted">لا يوجد أعضاء بعد</p>'}
   </div>
+  <div id="import-box"></div>
   <div id="edit-user-box"></div>`;
+  if(showImportBox) renderImportBox();
   if(editingUserId) renderEditUserForm();
+}
+function renderImportBox(){
+  document.getElementById('import-box').innerHTML=`
+  <div class="card">
+    <h3 style="margin-top:0">استيراد أعضاء دفعة واحدة</h3>
+    <p class="muted">اكتب عضو فى كل سطر، والبيانات مفصولة بفاصلة (,) بالترتيب التالى:</p>
+    <p class="muted" style="font-weight:700">الاسم , الرقم القومى , الكنيسة , الفرقة (الأولى/الثانية/الثالثة/الرابعة) , كلمة المرور (اختيارى)</p>
+    <p class="muted">لو سبت خانة كلمة المرور فارغة، هيبقى الرقم القومى هو كلمة المرور المبدئية للعضو.</p>
+    <textarea id="import-text" rows="8" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:13.5px" placeholder="مينا سمير فام, 29801012345678, كنيسة مارجرجس, الأولى
+مريم عادل حنا, 30002023456789, كنيسة العذراء, الثانية, 123456"></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn-navy" onclick="runBulkImport()">استيراد الآن</button>
+      <button class="btn-outline" onclick="showImportBox=false;renderAdminMembers()">إلغاء</button>
+    </div>
+    <div id="import-result"></div>
+  </div>`;
+}
+async function runBulkImport(){
+  const text = document.getElementById('import-text').value.trim();
+  if(!text) return;
+  const rows = text.split('\n').map(line=>line.trim()).filter(Boolean).map(line=>{
+    const parts = line.split(',').map(p=>p.trim());
+    return { name:parts[0]||'', nationalId:parts[1]||'', church:parts[2]||'', grade:parts[3]||'', password:parts[4]||'' };
+  });
+  try{
+    const result = await api('/users/bulk-import','POST',{rows});
+    let html = `<div class="msg ok">تم استيراد ${result.created} عضو بنجاح</div>`;
+    if(result.skipped && result.skipped.length){
+      html += `<div class="msg err">تم تجاهل ${result.skipped.length} سطر:<br>${result.skipped.map(s=>`- ${s.row.name||s.row.nationalId||'?'}: ${s.reason}`).join('<br>')}</div>`;
+    }
+    document.getElementById('import-result').innerHTML = html;
+    showImportBox=false;
+    renderAdminMembers();
+  }catch(e){ document.getElementById('import-result').innerHTML = `<div class="msg err">${e.message}</div>`; }
 }
 function renderEditUserForm(){
   const u = adminUsersCache.find(x=>x.id===editingUserId);
