@@ -121,11 +121,19 @@ function loginForm(){
   <div class="field"><label>كلمة المرور</label><input id="li-pass" type="password" placeholder="كلمة المرور"></div>
   <button class="btn-navy" style="width:100%" onclick="doLogin()">دخول</button>`;
 }
+const GRADES = ['الأولى','الثانية','الثالثة','الرابعة'];
+const LECTURE_GRADES = [...GRADES,'عام'];
+function gradeOptions(selected){
+  return GRADES.map(g=>`<option value="${g}" ${selected===g?'selected':''}>${g}</option>`).join('');
+}
 function registerForm(){
   return `
   <div class="field"><label>الاسم بالكامل</label><input id="r-name"></div>
   <div class="field"><label>الرقم القومى</label><input id="r-nid" maxlength="14"></div>
   <div class="field"><label>الكنيسة التابع لها</label><input id="r-church"></div>
+  <div class="field"><label>الفرقة</label>
+    <select id="r-grade"><option value="">-- اختر الفرقة --</option>${gradeOptions()}</select>
+  </div>
   <div class="field"><label>كلمة المرور</label><input id="r-pass" type="password"></div>
   <button class="btn-gold" style="width:100%" onclick="doRegister()">إرسال طلب التسجيل</button>
   <p class="muted center" style="margin-top:10px">سيتم تفعيل حسابك بعد موافقة الإدارة</p>`;
@@ -146,10 +154,11 @@ async function doRegister(){
   const name=document.getElementById('r-name').value.trim();
   const nid=document.getElementById('r-nid').value.trim();
   const church=document.getElementById('r-church').value.trim();
+  const grade=document.getElementById('r-grade').value;
   const pass=document.getElementById('r-pass').value;
-  if(!name||!nid||!church||!pass){ msg('من فضلك أكمل جميع البيانات','err'); return; }
+  if(!name||!nid||!church||!grade||!pass){ msg('من فضلك أكمل جميع البيانات','err'); return; }
   try{
-    await api('/register','POST',{name, nationalId:nid, church, password:pass});
+    await api('/register','POST',{name, nationalId:nid, church, grade, password:pass});
     authMode='login'; render();
     setTimeout(()=>msg('تم إرسال طلبك بنجاح، بانتظار موافقة الإدارة','ok'),0);
   }catch(e){ msg(e.message,'err'); }
@@ -189,6 +198,9 @@ function renderMemberProfile(){
     </div>
     <div class="row">
       <div class="field"><label>الرقم القومى</label><input value="${ME.nationalId}" disabled></div>
+      <div class="field"><label>الفرقة</label><input value="${ME.grade||'لم تُحدد بعد (راجع الإدارة)'}" disabled></div>
+    </div>
+    <div class="row">
       <div class="field"><label>كلمة مرور جديدة (اتركها فارغة لعدم التغيير)</label><input id="p-pass" type="password"></div>
     </div>
     <button class="btn-navy" onclick="saveProfile()">حفظ التعديلات</button>
@@ -206,12 +218,13 @@ async function saveProfile(){
   }catch(e){ document.getElementById('pmsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
 }
 async function renderScheduleView(){
-  const lec = (await api('/lectures')).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const all = await api('/lectures');
+  const lec = all.filter(l=>l.grade==='عام' || l.grade===ME.grade).slice().sort((a,b)=>a.date.localeCompare(b.date));
   document.getElementById('mtab').innerHTML=`
   <div class="card">
-    <h3 style="margin-top:0">جدول محاضرات الكلية</h3>
-    ${lec.length? `<table><tr><th>الموضوع</th><th>التاريخ</th><th>الوقت</th></tr>
-      ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td></tr>`).join('')}
+    <h3 style="margin-top:0">جدول محاضرات الكلية ${ME.grade?`- الفرقة ${ME.grade}`:''}</h3>
+    ${lec.length? `<table><tr><th>الموضوع</th><th>التاريخ</th><th>الوقت</th><th>الفرقة</th></tr>
+      ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td><td>${l.grade}</td></tr>`).join('')}
       </table>` : `<p class="muted">لم يتم إضافة جدول بعد</p>`}
   </div>`;
 }
@@ -239,9 +252,10 @@ async function renderMemberAttend(){
   await refreshMyAttendanceTable();
 }
 async function refreshMyAttendanceTable(){
-  const [mine, lectures] = await Promise.all([api('/attendance/mine'), api('/lectures')]);
+  const [mine, all] = await Promise.all([api('/attendance/mine'), api('/lectures')]);
+  const lectures = all.filter(l=>l.grade==='عام' || l.grade===ME.grade);
   const box = document.getElementById('my-att-table');
-  if(!lectures.length){ box.innerHTML='<p class="muted">لا توجد محاضرات مسجلة بعد</p>'; return; }
+  if(!lectures.length){ box.innerHTML='<p class="muted">لا توجد محاضرات تخص فرقتك بعد</p>'; return; }
   const rows = lectures.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(l=>{
     const present = mine.some(a=>a.lectureId===l.id);
     return `<tr><td>${l.title}</td><td>${l.date}</td><td><span class="badge ${present?'present':'absent'}">${present?'حاضر':'غائب'}</span></td></tr>`;
@@ -322,26 +336,60 @@ async function renderAdmin(){
   const fn = {members:renderAdminMembers, schedule:renderAdminSchedule, attend:renderAdminAttend, reports:renderAdminReports, settings:renderAdminSettings}[adminTab];
   await fn();
 }
+let editingUserId=null;
+let adminUsersCache=[];
 async function renderAdminMembers(){
   const users = await api('/users');
+  adminUsersCache = users;
   const pending = users.filter(u=>u.status==='pending');
   const approved = users.filter(u=>u.status==='approved');
   document.getElementById('atab').innerHTML=`
   <div class="card">
     <h3 style="margin-top:0">طلبات تسجيل جديدة (${pending.length})</h3>
-    ${pending.length? `<table><tr><th>الاسم</th><th>الرقم القومى</th><th>الكنيسة</th><th></th></tr>
-    ${pending.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td>
+    ${pending.length? `<table><tr><th>الاسم</th><th>الرقم القومى</th><th>الكنيسة</th><th>الفرقة</th><th></th></tr>
+    ${pending.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td>${u.grade||'-'}</td>
       <td><button class="btn-gold btn-sm" onclick="approveUser('${u.id}')">موافقة</button>
       <button class="btn-danger btn-sm" onclick="rejectUser('${u.id}')">رفض</button></td></tr>`).join('')}
     </table>` : '<p class="muted">لا توجد طلبات جديدة</p>'}
   </div>
   <div class="card">
     <h3 style="margin-top:0">الأعضاء المفعّلون (${approved.length})</h3>
-    ${approved.length? `<table><tr><th>الاسم</th><th>الرقم القومى</th><th>الكنيسة</th><th>الحالة</th><th></th></tr>
-    ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td><span class="badge approved">مفعّل</span></td>
-      <td><button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">حذف</button></td></tr>`).join('')}
+    ${approved.length? `<table><tr><th>الاسم</th><th>الرقم القومى</th><th>الكنيسة</th><th>الفرقة</th><th></th></tr>
+    ${approved.map(u=>`<tr><td>${u.name}</td><td>${u.nationalId}</td><td>${u.church}</td><td>${u.grade||'<span class="badge pending">غير محددة</span>'}</td>
+      <td><button class="btn-outline btn-sm" onclick="editingUserId='${u.id}';renderAdminMembers()">تعديل</button>
+      <button class="btn-danger btn-sm" onclick="removeUser('${u.id}')">حذف</button></td></tr>`).join('')}
     </table>` : '<p class="muted">لا يوجد أعضاء بعد</p>'}
+  </div>
+  <div id="edit-user-box"></div>`;
+  if(editingUserId) renderEditUserForm();
+}
+function renderEditUserForm(){
+  const u = adminUsersCache.find(x=>x.id===editingUserId);
+  if(!u) return;
+  document.getElementById('edit-user-box').innerHTML=`
+  <div class="card" style="max-width:480px">
+    <h3 style="margin-top:0">تعديل بيانات: ${u.name}</h3>
+    <div class="field"><label>الاسم</label><input id="eu-name" value="${u.name}"></div>
+    <div class="field"><label>الكنيسة</label><input id="eu-church" value="${u.church}"></div>
+    <div class="field"><label>الفرقة</label>
+      <select id="eu-grade"><option value="">-- بدون تغيير --</option>${gradeOptions(u.grade)}</select>
+    </div>
+    <div class="field"><label>كلمة مرور جديدة (اتركها فارغة لعدم التغيير)</label><input id="eu-pass" type="password"></div>
+    <button class="btn-navy" onclick="saveUserEdit('${u.id}')">حفظ</button>
+    <button class="btn-outline" onclick="editingUserId=null;renderAdminMembers()">إلغاء</button>
+    <div id="eumsg"></div>
   </div>`;
+}
+async function saveUserEdit(id){
+  const name=document.getElementById('eu-name').value.trim();
+  const church=document.getElementById('eu-church').value.trim();
+  const grade=document.getElementById('eu-grade').value;
+  const password=document.getElementById('eu-pass').value;
+  try{
+    await api(`/users/${id}`,'PUT',{name, church, grade: grade||undefined, password: password||undefined});
+    editingUserId=null;
+    renderAdminMembers();
+  }catch(e){ document.getElementById('eumsg').innerHTML=`<div class="msg err">${e.message}</div>`; }
 }
 async function approveUser(id){ await api(`/users/${id}/approve`,'POST'); renderAdminMembers(); }
 async function rejectUser(id){ await api(`/users/${id}`,'DELETE'); renderAdminMembers(); }
@@ -356,13 +404,16 @@ async function renderAdminSchedule(){
       <div class="field"><label>موضوع المحاضرة</label><input id="s-title"></div>
       <div class="field"><label>التاريخ</label><input id="s-date" type="date" value="${todayISO()}"></div>
       <div class="field"><label>الوقت</label><input id="s-time" type="time"></div>
+      <div class="field"><label>الفرقة المستهدفة</label>
+        <select id="s-grade">${LECTURE_GRADES.map(g=>`<option value="${g}">${g}</option>`).join('')}</select>
+      </div>
     </div>
     <button class="btn-navy" onclick="addLecture()">إضافة للجدول</button>
   </div>
   <div class="card">
     <h3 style="margin-top:0">الجدول الحالى</h3>
-    ${lec.length? `<table><tr><th>الموضوع</th><th>التاريخ</th><th>الوقت</th><th></th></tr>
-    ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td>
+    ${lec.length? `<table><tr><th>الموضوع</th><th>التاريخ</th><th>الوقت</th><th>الفرقة</th><th></th></tr>
+    ${lec.map(l=>`<tr><td>${l.title}</td><td>${l.date}</td><td>${l.time||'-'}</td><td>${l.grade}</td>
       <td><button class="btn-danger btn-sm" onclick="delLecture('${l.id}')">حذف</button></td></tr>`).join('')}
     </table>`:'<p class="muted">الجدول فارغ</p>'}
   </div>`;
@@ -370,9 +421,10 @@ async function renderAdminSchedule(){
 async function addLecture(){
   const title=document.getElementById('s-title').value.trim();
   const date=document.getElementById('s-date').value;
+  const grade=document.getElementById('s-grade').value;
   const time=document.getElementById('s-time').value;
   if(!title||!date) return;
-  await api('/lectures','POST',{title,date,time});
+  await api('/lectures','POST',{title,date,time,grade});
   renderAdminSchedule();
 }
 async function delLecture(id){ if(confirm('حذف هذه المحاضرة وسجلات حضورها؟')){ await api(`/lectures/${id}`,'DELETE'); renderAdminSchedule(); } }
@@ -385,7 +437,7 @@ async function renderAdminAttend(){
     <div class="field"><label>اختر محاضرة (حسب التاريخ)</label>
       <select id="a-select" onchange="selectedLectureId=this.value;renderAdminAttend()">
         <option value="">-- اختر --</option>
-        ${lec.map(l=>`<option value="${l.id}" ${selectedLectureId===l.id?'selected':''}>${l.date} - ${l.title}</option>`).join('')}
+        ${lec.map(l=>`<option value="${l.id}" ${selectedLectureId===l.id?'selected':''}>${l.date} - ${l.title} (${l.grade})</option>`).join('')}
       </select>
     </div>
   </div>
@@ -395,12 +447,12 @@ async function renderAdminAttend(){
 async function renderLectureAttendPanel(l){
   if(!l){ document.getElementById('lecinfo').innerHTML=''; return; }
   const [users, att] = await Promise.all([api('/users'), api(`/attendance?lectureId=${l.id}`)]);
-  const approved = users.filter(u=>u.status==='approved');
+  const approved = users.filter(u=>u.status==='approved' && (l.grade==='عام' || u.grade===l.grade));
   document.getElementById('lecinfo').innerHTML=`
   <div class="card">
     <div class="qr-print">
       <div class="small-title">كود المحاضرة</div>
-      <h3>${l.title} - ${l.date}</h3>
+      <h3>${l.title} - ${l.date} (${l.grade})</h3>
       <div id="qrbox"></div>
       <p class="muted">${l.code}</p>
       <button class="btn-outline btn-sm no-print" onclick="window.print()">طباعة الكود</button>
@@ -408,14 +460,14 @@ async function renderLectureAttendPanel(l){
   </div>
   <div class="card no-print">
     <h3 style="margin-top:0">تسجيل يدوى للحضور (${att.length}/${approved.length})</h3>
-    <table><tr><th>الاسم</th><th>الكنيسة</th><th>الحالة</th><th></th></tr>
+    ${approved.length? `<table><tr><th>الاسم</th><th>الكنيسة</th><th>الفرقة</th><th>الحالة</th><th></th></tr>
     ${approved.map(u=>{
       const present = att.some(a=>a.userId===u.id);
-      return `<tr><td>${u.name}</td><td>${u.church}</td>
+      return `<tr><td>${u.name}</td><td>${u.church}</td><td>${u.grade||'-'}</td>
         <td><span class="badge ${present?'present':'absent'}">${present?'حاضر':'غائب'}</span></td>
         <td><button class="btn-outline btn-sm" onclick="toggleAttend('${l.id}','${u.id}')">${present?'إلغاء':'تحضير'}</button></td></tr>`;
     }).join('')}
-    </table>
+    </table>` : '<p class="muted">لا يوجد أعضاء بفرقة تخص هذه المحاضرة</p>'}
   </div>`;
   new QRCode(document.getElementById('qrbox'),{text:l.code,width:180,height:180,colorDark:'#0e2140',colorLight:'#fff'});
 }
@@ -428,8 +480,11 @@ async function toggleAttend(lid,uid_){
 async function renderAdminReports(){
   const [users, lectures, attendance] = await Promise.all([api('/users'), api('/lectures'), api('/attendance')]);
   const approved = users.filter(u=>u.status==='approved');
-  const totalSlots = approved.length*lectures.length;
-  const absenceRate = totalSlots? (((totalSlots-attendance.length)/totalSlots)*100).toFixed(1):'0';
+  const applicableMembers = l => approved.filter(u=> l.grade==='عام' || u.grade===l.grade);
+  const applicableLectures = u => lectures.filter(l=> l.grade==='عام' || l.grade===u.grade);
+  let totalSlots=0, totalPresent=attendance.length;
+  lectures.forEach(l=>{ totalSlots += applicableMembers(l).length; });
+  const absenceRate = totalSlots? (((totalSlots-totalPresent)/totalSlots)*100).toFixed(1):'0';
   document.getElementById('atab').innerHTML=`
   <div class="card">
     <div class="row no-print">
@@ -440,23 +495,37 @@ async function renderAdminReports(){
     <p>نسبة الغياب العامة: <b style="color:var(--danger)">${absenceRate}%</b></p>
   </div>
   <div class="card">
+    <h3 style="margin-top:0">ملخص حسب الفرقة</h3>
+    <table><tr><th>الفرقة</th><th>عدد الأعضاء</th><th>المحاضرات الخاصة بها</th><th>نسبة الغياب</th></tr>
+    ${GRADES.map(g=>{
+      const members = approved.filter(u=>u.grade===g);
+      const gLectures = lectures.filter(l=>l.grade===g || l.grade==='عام');
+      const slots = members.length*gLectures.length;
+      const present = attendance.filter(a=> gLectures.some(l=>l.id===a.lectureId) && members.some(m=>m.id===a.userId)).length;
+      const pct = slots? (((slots-present)/slots)*100).toFixed(0):'0';
+      return `<tr><td>${g}</td><td>${members.length}</td><td>${gLectures.length}</td><td>${pct}%</td></tr>`;
+    }).join('')}</table>
+  </div>
+  <div class="card">
     <h3 style="margin-top:0">الغياب اليومى (لكل محاضرة)</h3>
-    ${lectures.length? `<table><tr><th>المحاضرة</th><th>التاريخ</th><th>حاضر</th><th>غائب</th><th>نسبة الغياب</th></tr>
+    ${lectures.length? `<table><tr><th>المحاضرة</th><th>التاريخ</th><th>الفرقة</th><th>حاضر</th><th>غائب</th><th>نسبة الغياب</th></tr>
     ${lectures.map(l=>{
+      const members = applicableMembers(l);
       const present = attendance.filter(a=>a.lectureId===l.id).length;
-      const absent = approved.length-present;
-      const pct = approved.length? ((absent/approved.length)*100).toFixed(0):0;
-      return `<tr><td>${l.title}</td><td>${l.date}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
+      const absent = members.length-present;
+      const pct = members.length? ((absent/members.length)*100).toFixed(0):0;
+      return `<tr><td>${l.title}</td><td>${l.date}</td><td>${l.grade}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
     }).join('')}</table>`:'<p class="muted">لا توجد محاضرات</p>'}
   </div>
   <div class="card">
     <h3 style="margin-top:0">غياب كل عضو</h3>
-    ${approved.length? `<table><tr><th>الاسم</th><th>الكنيسة</th><th>حضر</th><th>غاب</th><th>نسبة الغياب</th></tr>
+    ${approved.length? `<table><tr><th>الاسم</th><th>الكنيسة</th><th>الفرقة</th><th>حضر</th><th>غاب</th><th>نسبة الغياب</th></tr>
     ${approved.map(u=>{
-      const present = attendance.filter(a=>a.userId===u.id).length;
-      const absent = lectures.length-present;
-      const pct = lectures.length? ((absent/lectures.length)*100).toFixed(0):0;
-      return `<tr><td>${u.name}</td><td>${u.church}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
+      const relevant = applicableLectures(u);
+      const present = attendance.filter(a=>a.userId===u.id && relevant.some(l=>l.id===a.lectureId)).length;
+      const absent = relevant.length-present;
+      const pct = relevant.length? ((absent/relevant.length)*100).toFixed(0):0;
+      return `<tr><td>${u.name}</td><td>${u.church}</td><td>${u.grade||'-'}</td><td>${present}</td><td>${absent}</td><td>${pct}%</td></tr>`;
     }).join('')}</table>`:'<p class="muted">لا يوجد أعضاء</p>'}
   </div>`;
 }
