@@ -164,6 +164,39 @@ app.delete('/api/users/:id', auth('admin'), (req, res) => {
   res.json({ ok: true });
 });
 
+app.post('/api/users/bulk-import', auth('admin'), (req, res) => {
+  const { rows } = req.body || {};
+  if (!Array.isArray(rows) || !rows.length) return res.status(400).json({ error: 'لا توجد بيانات للاستيراد' });
+  const data = db.load();
+  let created = 0;
+  const skipped = [];
+  rows.forEach(r => {
+    const name = (r.name || '').trim();
+    const nationalId = (r.nationalId || '').trim();
+    const church = (r.church || '').trim();
+    const grade = (r.grade || '').trim();
+    const password = (r.password || '').trim() || nationalId;
+    if (!name || !nationalId || !church || !GRADES.includes(grade)) {
+      skipped.push({ row: r, reason: 'بيانات ناقصة أو فرقة غير صحيحة' });
+      return;
+    }
+    if (nationalId === 'admin' || data.users.some(u => u.nationalId === nationalId)) {
+      skipped.push({ row: r, reason: 'الرقم القومى مسجل بالفعل' });
+      return;
+    }
+    data.users.push({
+      id: crypto.randomUUID(),
+      name, nationalId, church, grade,
+      passwordHash: bcrypt.hashSync(password, 10),
+      status: 'approved',
+      createdAt: Date.now()
+    });
+    created++;
+  });
+  db.save(data);
+  res.json({ created, skipped });
+});
+
 // ================= ATTENDANCE =================
 app.get('/api/attendance/mine', auth('member'), (req, res) => {
   const data = db.load();
